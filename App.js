@@ -1,24 +1,40 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Modal, TouchableHighlight, Text, View, Button,Alert } from 'react-native';
+import { FlatList, StyleSheet, Modal, TouchableHighlight, Text, View, Button,Alert } from 'react-native';
 import { BarCodeScanner } from 'expo-barcode-scanner';
+import axios from 'axios';
 
 export default function App() {
 	const [hasPermission, setHasPermission] = useState(null);
 	const [scanned, setScanned] = useState(false);
-	const [modalVisible, setModalVisible] = useState(false);
+	const [modalVisible, setModalVisible] = useState(false);	
+	const [data, setData] = useState({});
 
 	useEffect(() => {
 		(async () => {
 			const { status } = await BarCodeScanner.requestPermissionsAsync();
 			setHasPermission(status === 'granted');
 		})();
+
+		async function fetchMyAPI() {
+			let response = await axios.get('http://51.254.205.197:8082/rest/promotions/actifs');
+			console.log(response);
+			setData(response);
+		}
+
+		fetchMyAPI();
 	}, []);
 
 	const handleBarCodeScanned = ({ type, data }) => {
 		//TODO send request with code from the QR to database via the service
 		setScanned(true);
 		alert(`Bar code with type ${type} and data ${data} has been scanned`);
+		putQrCode(data);
 	};
+
+	async function putQrCode(qrCode) {
+		let response = await axios.put('http://51.254.205.197:8082/rest/promotions/activ/'+qrCode);
+		console.log(response);
+	}
 
 	if (hasPermission === null) {
 		return <Text>Requesting for camera permission</Text>;
@@ -45,9 +61,7 @@ export default function App() {
 					<View style={styles.centeredView}>
 						<View style={styles.modalView}>
 							<Text style={styles.modalText}>Ceci est la liste de promotion</Text>
-							<Text style={styles.Text}>code n°1</Text>
-							<Text style={styles.Text}>code n°2</Text>
-							<Text style={styles.Text}>code n°3</Text>
+							<FlatList data={data.data} renderItem={({ item }) => <Text style={styles.item}>{item.description}</Text>} />
 							<TouchableHighlight
 								style={{ ...styles.openButton, backgroundColor: '#2196F3' }}
 								onPress={() => {
