@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { FlatList, StyleSheet, Modal, TouchableHighlight, Text, View, Button,Alert } from 'react-native';
+import { FlatList, StyleSheet, Modal, TouchableHighlight, Text, View, Button, Alert } from 'react-native';
 import { BarCodeScanner } from 'expo-barcode-scanner';
+//import axios from './config/config';
 import axios from 'axios';
 
 export default function App() {
 	const [hasPermission, setHasPermission] = useState(null);
 	const [scanned, setScanned] = useState(false);
-	const [modalVisible, setModalVisible] = useState(false);	
+	const [modalVisible, setModalVisible] = useState(false);
 	const [data, setData] = useState({});
 
 	useEffect(() => {
@@ -15,25 +16,30 @@ export default function App() {
 			setHasPermission(status === 'granted');
 		})();
 
-		async function fetchMyAPI() {
-			let response = await axios.get('http://51.254.205.197:8082/rest/promotions/actifs');
-			console.log(response);
-			setData(response);
-		}
-
 		fetchMyAPI();
 	}, []);
 
-	const handleBarCodeScanned = ({ type, data }) => {
-		//TODO send request with code from the QR to database via the service
+	const handleBarCodeScanned = ({ data }) => {
 		setScanned(true);
-		alert(`Bar code with type ${type} and data ${data} has been scanned`);
-		putQrCode(data);
+		(async () => await putQrCode(data))();
 	};
 
-	async function putQrCode(qrCode) {
-		let response = await axios.put('http://51.254.205.197:8082/rest/promotions/activ/'+qrCode);
-		console.log(response);
+	function putQrCode(qrCode) {
+		axios.put('http://51.254.205.197:8082/rest/promotions/activ/' + qrCode).then(
+			response => {
+				console.log(response);
+				alert(`Vous avez une nouvelle promotion !`);
+				fetchMyAPI();
+			},
+			error => {
+				console.log(error); //TODO traiter l'erreur et afficher si pb serveur ou si qrcode invalide
+			}
+		);
+	}
+
+	async function fetchMyAPI() {
+		let response = await axios.get('http://51.254.205.197:8082/rest/promotions/actifs');
+		setData(response);
 	}
 
 	if (hasPermission === null) {
@@ -45,6 +51,9 @@ export default function App() {
 
 	return (
 		<View style={styles.container}>
+			<View>
+				<Text style={styles.title}>Scanne un QR Code GoStyle pour obtenir une promotion !</Text>
+			</View>
 			<View style={styles.scanner}>
 				<BarCodeScanner onBarCodeScanned={scanned ? undefined : handleBarCodeScanned} style={StyleSheet.absoluteFillObject} />
 				{scanned && <Button title={'Appuyer pour scanner'} onPress={() => setScanned(false)} />}
@@ -60,8 +69,16 @@ export default function App() {
 				>
 					<View style={styles.centeredView}>
 						<View style={styles.modalView}>
-							<Text style={styles.modalText}>Ceci est la liste de promotion</Text>
-							<FlatList data={data.data} renderItem={({ item }) => <Text style={styles.item}>{item.description}</Text>} />
+							<Text style={styles.modalText}>Mes promotions actives : </Text>
+							<FlatList
+								data={data.data}
+								renderItem={({ item }) => (
+									<Text style={styles.item}>
+										{item.description} {item.montant > 0 ? item.montant + '%' : ''}
+									</Text>
+								)}
+								keyExtractor={item => item.id}
+							/>
 							<TouchableHighlight
 								style={{ ...styles.openButton, backgroundColor: '#2196F3' }}
 								onPress={() => {
@@ -80,7 +97,7 @@ export default function App() {
 						setModalVisible(true);
 					}}
 				>
-					<Text style={styles.textStyle}>Afficher la liste des promotions</Text>
+					<Text style={styles.textStyle}>Voir mes promotions</Text>
 				</TouchableHighlight>
 			</View>
 		</View>
@@ -144,6 +161,24 @@ const styles = StyleSheet.create({
 	},
 	modalText: {
 		marginBottom: 15,
-		textAlign: 'center'
+		textAlign: 'center',
+		fontSize: 20
+	},
+	item: {
+		color: '#333',
+		borderColor: '#CCC',
+		borderStyle: 'solid',
+		borderWidth: 1,
+		borderRadius: 5,
+		marginBottom: 2,
+		padding: 10,
+		fontSize: 16
+	},
+	title: {
+		color: '#FFF',
+		marginTop: 30,
+		textAlign: 'center',
+		fontSize: 18,
+		fontWeight:'bold'
 	}
 });
