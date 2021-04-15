@@ -1,24 +1,49 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Modal, TouchableHighlight, Text, View, Button,Alert } from 'react-native';
+import { FlatList, StyleSheet, Modal, TouchableHighlight, Text, View, Button, Alert } from 'react-native';
 import { BarCodeScanner } from 'expo-barcode-scanner';
+import axios from 'axios';
 
 export default function App() {
 	const [hasPermission, setHasPermission] = useState(null);
 	const [scanned, setScanned] = useState(false);
 	const [modalVisible, setModalVisible] = useState(false);
+	const [data, setData] = useState({});
 
 	useEffect(() => {
 		(async () => {
 			const { status } = await BarCodeScanner.requestPermissionsAsync();
 			setHasPermission(status === 'granted');
 		})();
+
+		fetchMyAPI();
 	}, []);
 
-	const handleBarCodeScanned = ({ type, data }) => {
-		//TODO send request with code from the QR to database via the service
+	const handleBarCodeScanned = ({ data }) => {
 		setScanned(true);
-		alert(`Bar code with type ${type} and data ${data} has been scanned`);
+		(async () => await putQrCode(data))();
 	};
+
+	function putQrCode(qrCode) {
+		axios.put('http://51.254.205.197:8082/rest/promotions/activ/' + qrCode).then(
+			response => {
+				console.log(response);
+				alert(`Vous avez une nouvelle promotion ! :)`);
+				fetchMyAPI();
+			},
+			error => {
+				if (error.response.status === 404) {
+					alert(`Ce code n'est pas valide, désolée :(`);
+				} else {
+					alert(`Uho, il semblerait que notre serveur soit indisponible :(`);
+				}
+			}
+		);
+	}
+
+	async function fetchMyAPI() {
+		let response = await axios.get('http://51.254.205.197:8082/rest/promotions/actifs');
+		setData(response);
+	}
 
 	if (hasPermission === null) {
 		return <Text>Requesting for camera permission</Text>;
@@ -29,6 +54,9 @@ export default function App() {
 
 	return (
 		<View style={styles.container}>
+			<View>
+				<Text style={styles.title}>Scanne un QR Code GoStyle pour obtenir une promotion !</Text>
+			</View>
 			<View style={styles.scanner}>
 				<BarCodeScanner onBarCodeScanned={scanned ? undefined : handleBarCodeScanned} style={StyleSheet.absoluteFillObject} />
 				{scanned && <Button title={'Appuyer pour scanner'} onPress={() => setScanned(false)} />}
@@ -44,10 +72,17 @@ export default function App() {
 				>
 					<View style={styles.centeredView}>
 						<View style={styles.modalView}>
-							<Text style={styles.modalText}>Ceci est la liste de promotion</Text>
-							<Text style={styles.Text}>code n°1</Text>
-							<Text style={styles.Text}>code n°2</Text>
-							<Text style={styles.Text}>code n°3</Text>
+							<Text style={styles.modalText}>Mes promotions actives : </Text>
+							<FlatList
+								data={data.data}
+								renderItem={({ item }) => (
+									<Text style={styles.item}>
+										{item.description} {item.montant > 0 ? item.montant + '%' : ''}
+										{item.qrCode}
+									</Text>
+								)}
+								keyExtractor={item => item.qrcode}
+							/>
 							<TouchableHighlight
 								style={{ ...styles.openButton, backgroundColor: '#2196F3' }}
 								onPress={() => {
@@ -66,7 +101,7 @@ export default function App() {
 						setModalVisible(true);
 					}}
 				>
-					<Text style={styles.textStyle}>Afficher la liste des promotions</Text>
+					<Text style={styles.textStyle}>Voir mes promotions</Text>
 				</TouchableHighlight>
 			</View>
 		</View>
@@ -130,6 +165,24 @@ const styles = StyleSheet.create({
 	},
 	modalText: {
 		marginBottom: 15,
-		textAlign: 'center'
+		textAlign: 'center',
+		fontSize: 20
+	},
+	item: {
+		color: '#333',
+		borderColor: '#CCC',
+		borderStyle: 'solid',
+		borderWidth: 1,
+		borderRadius: 5,
+		marginBottom: 2,
+		padding: 10,
+		fontSize: 16
+	},
+	title: {
+		color: '#FFF',
+		marginTop: 30,
+		textAlign: 'center',
+		fontSize: 18,
+		fontWeight: 'bold'
 	}
 });
