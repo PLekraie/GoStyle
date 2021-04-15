@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { FlatList, StyleSheet, Modal, TouchableHighlight, Text, View, Button, Alert } from 'react-native';
-import { BarCodeScanner } from 'expo-barcode-scanner';
+import { StyleSheet, View, Button, Text } from 'react-native';
 import axios from 'axios';
+
+import Header from './src/components/Header';
+import { BarCodeScanner } from 'expo-barcode-scanner';
+import PromoList from './src/components/PromoList';
 
 export default function App() {
 	const [hasPermission, setHasPermission] = useState(null);
 	const [scanned, setScanned] = useState(false);
-	const [modalVisible, setModalVisible] = useState(false);
 	const [data, setData] = useState({});
 
 	useEffect(() => {
@@ -23,6 +25,11 @@ export default function App() {
 		(async () => await putQrCode(data))();
 	};
 
+	async function fetchMyAPI() {
+		let response = await axios.get('http://51.254.205.197:8082/rest/promotions/actifs');
+		setData(response);
+	}
+
 	function putQrCode(qrCode) {
 		axios.put('http://51.254.205.197:8082/rest/promotions/activ/' + qrCode).then(
 			response => {
@@ -32,17 +39,12 @@ export default function App() {
 			},
 			error => {
 				if (error.response.status === 404) {
-					alert(`Ce code n'est pas valide, désolée :(`);
+					alert(`Ce code n'est pas valide, désolé :(`);
 				} else {
 					alert(`Uho, il semblerait que notre serveur soit indisponible :(`);
 				}
 			}
 		);
-	}
-
-	async function fetchMyAPI() {
-		let response = await axios.get('http://51.254.205.197:8082/rest/promotions/actifs');
-		setData(response);
 	}
 
 	if (hasPermission === null) {
@@ -54,56 +56,12 @@ export default function App() {
 
 	return (
 		<View style={styles.container}>
-			<View>
-				<Text style={styles.title}>Scanne un QR Code GoStyle pour obtenir une promotion !</Text>
-			</View>
+			<Header />
 			<View style={styles.scanner}>
 				<BarCodeScanner onBarCodeScanned={scanned ? undefined : handleBarCodeScanned} style={StyleSheet.absoluteFillObject} />
 				{scanned && <Button title={'Appuyer pour scanner'} onPress={() => setScanned(false)} />}
 			</View>
-			<View style={styles.centeredView}>
-				<Modal
-					animationType="slide"
-					transparent={true}
-					visible={modalVisible}
-					onRequestClose={() => {
-						Alert.alert('Modal has been closed.');
-					}}
-				>
-					<View style={styles.centeredView}>
-						<View style={styles.modalView}>
-							<Text style={styles.modalText}>Mes promotions actives : </Text>
-							<FlatList
-								data={data.data}
-								renderItem={({ item }) => (
-									<Text style={styles.item}>
-										{item.description} {item.montant > 0 ? item.montant + '%' : ''}
-										{item.qrCode}
-									</Text>
-								)}
-								keyExtractor={item => item.qrcode}
-							/>
-							<TouchableHighlight
-								style={{ ...styles.openButton, backgroundColor: '#2196F3' }}
-								onPress={() => {
-									setModalVisible(!modalVisible);
-								}}
-							>
-								<Text style={styles.textStyle}>retour au scanner</Text>
-							</TouchableHighlight>
-						</View>
-					</View>
-				</Modal>
-
-				<TouchableHighlight
-					style={styles.openButton}
-					onPress={() => {
-						setModalVisible(true);
-					}}
-				>
-					<Text style={styles.textStyle}>Voir mes promotions</Text>
-				</TouchableHighlight>
-			</View>
+			<PromoList data={data}/>
 		</View>
 	);
 }
@@ -113,76 +71,10 @@ const styles = StyleSheet.create({
 		flex: 1,
 		backgroundColor: 'black'
 	},
-	buttonbar: {
-		flex: 1,
-		backgroundColor: '#000',
-		padding: 10
-	},
 	scanner: {
 		flex: 9,
 		backgroundColor: '#000',
 		alignItems: 'center',
 		justifyContent: 'center'
-	},
-	buttonStyle: {
-		marginTop: 20
-	},
-	centeredView: {
-		flex: 1,
-		justifyContent: 'center',
-		alignItems: 'center',
-		marginTop: 22
-	},
-	modalView: {
-		margin: 20,
-		backgroundColor: 'white',
-		borderRadius: 20,
-		padding: 35,
-		alignItems: 'center',
-		shadowColor: '#000',
-		shadowOffset: {
-			width: 0,
-			height: 2
-		},
-		shadowOpacity: 0.25,
-		shadowRadius: 3.84,
-		elevation: 5
-	},
-	openButton: {
-		backgroundColor: '#4040ff',
-		borderRadius: 20,
-		padding: 10,
-		elevation: 2
-	},
-	textStyle: {
-		color: 'white',
-		fontWeight: 'bold',
-		textAlign: 'center'
-	},
-	Text: {
-		marginBottom: 15,
-		textAlign: 'center'
-	},
-	modalText: {
-		marginBottom: 15,
-		textAlign: 'center',
-		fontSize: 20
-	},
-	item: {
-		color: '#333',
-		borderColor: '#CCC',
-		borderStyle: 'solid',
-		borderWidth: 1,
-		borderRadius: 5,
-		marginBottom: 2,
-		padding: 10,
-		fontSize: 16
-	},
-	title: {
-		color: '#FFF',
-		marginTop: 30,
-		textAlign: 'center',
-		fontSize: 18,
-		fontWeight: 'bold'
 	}
 });
