@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FlatList, StyleSheet, Modal, TouchableHighlight, Text, View, Button, Alert } from 'react-native';
 import { BarCodeScanner } from 'expo-barcode-scanner';
-//import axios from './config/config';
 import axios from 'axios';
 
 export default function App() {
@@ -28,11 +27,15 @@ export default function App() {
 		axios.put('http://51.254.205.197:8082/rest/promotions/activ/' + qrCode).then(
 			response => {
 				console.log(response);
-				alert(`Vous avez une nouvelle promotion !`);
+				alert(`Vous avez une nouvelle promotion ! :)`);
 				fetchMyAPI();
 			},
 			error => {
-				console.log(error); //TODO traiter l'erreur et afficher si pb serveur ou si qrcode invalide
+				if (error.response.status === 404) {
+					alert(`Ce code n'est pas valide, désolée :(`);
+				} else {
+					alert(`Uho, il semblerait que notre serveur soit indisponible :(`);
+				}
 			}
 		);
 	}
@@ -75,9 +78,10 @@ export default function App() {
 								renderItem={({ item }) => (
 									<Text style={styles.item}>
 										{item.description} {item.montant > 0 ? item.montant + '%' : ''}
+										{item.qrCode}
 									</Text>
 								)}
-								keyExtractor={item => item.id}
+								keyExtractor={item => item.qrcode}
 							/>
 							<TouchableHighlight
 								style={{ ...styles.openButton, backgroundColor: '#2196F3' }}
@@ -179,6 +183,6 @@ const styles = StyleSheet.create({
 		marginTop: 30,
 		textAlign: 'center',
 		fontSize: 18,
-		fontWeight:'bold'
+		fontWeight: 'bold'
 	}
 });
