@@ -1,21 +1,13 @@
 /* eslint-disable no-undef */
 //const { default: App } = require('../App');
+import 'react-native';
 import React from 'react';
-import renderer from 'react-test-renderer';
+import {fireEvent, render} from '@testing-library/react-native';
 import App from '../App';
+import {expect, it} from '@jest/globals'
 //const app = require('./App');
 
-/*
-it('you can render the app', () => {
-  const tree = renderer.create(<App />).toJSON();
-  expect(tree).toMatchSnapshot();
-  return tree;
-})
-*/
 
-describe('Testing', () =>
-  it('renders correctly', () => {
-    const wrapper = renderer.create(<App />).toJSON();
-    expect(wrapper).toBeDefined();
-  })
-);
+test('the app renders', async () => {
+  await expect(render(<App />).toJSON()).toBeDefined();
+});
