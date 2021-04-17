@@ -4,11 +4,30 @@ import React from 'react';
 import {fireEvent, render} from '@testing-library/react-native';
 import App from '../App';
 import {expect, it} from '@jest/globals';
+import { Header } from 'react-native/Libraries/NewAppScreen';
 
 
 test('the app renders', async () => {
   await expect(render(<App />).toJSON()).toBeDefined();
 });
+
+describe('the app contains all the component', () => {
+
+  const app = render(<App />);
+
+  test('the app contains the header', async () => {
+    let head = app.findAllByTestId("messageHeader");
+    await expect(head).toBeDefined();
+  });
+
+  test('the app contains the PromoList', async () => {
+    let head = app.findAllByTestId("openModalButton");
+    await expect(head).toBeDefined();
+  });
+
+});
+
+
 
 /*test('bouton voir promotion', async () => {
 
