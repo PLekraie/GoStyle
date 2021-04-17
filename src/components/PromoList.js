@@ -46,7 +46,7 @@ class PromoList extends React.Component {
 					</View>
 				</Modal>
 
-				<TouchableHighlight style={styles.openButton} onPress={this.onOpenModal}>
+				<TouchableHighlight style={styles.openButton} onPress={this.onOpenModal} testID="openModalButton">
 					<Text style={styles.textStyle}>Voir mes promotions</Text>
 				</TouchableHighlight>
 			</View>
