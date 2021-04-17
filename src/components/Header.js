@@ -5,7 +5,7 @@ class Header extends React.Component {
     render(){
         return(
             <View>
-				<Text style={styles.title}>Scanne un QR Code GoStyle pour obtenir une promotion !</Text>
+				<Text style={styles.title} testID="messageHeader">Scanne un QR Code GoStyle pour obtenir une promotion !</Text>
 			</View>
         );
     }
