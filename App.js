@@ -6,10 +6,14 @@ import Header from './src/components/Header';
 import { BarCodeScanner } from 'expo-barcode-scanner';
 import PromoList from './src/components/PromoList';
 
+
+
 export default function App() {
 	const [hasPermission, setHasPermission] = useState(null);
 	const [scanned, setScanned] = useState(false);
 	const [data, setData] = useState({});
+	const [didMount, setDidMount] = useState(false); 
+
 
 	useEffect(() => {
 		(async () => {
@@ -18,7 +22,13 @@ export default function App() {
 		})();
 
 		fetchMyAPI();
+		setDidMount(true);
+   		return () => setDidMount(false);
 	}, []);
+
+	if(!didMount) {
+		return null;
+	};
 
 	const handleBarCodeScanned = ({ data }) => {
 		setScanned(true);
