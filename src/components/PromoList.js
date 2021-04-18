@@ -6,10 +6,16 @@ class PromoList extends React.Component {
 		modalVisible: false
 	};
 
+	/**
+	 * To display modal
+	 */
 	onOpenModal = () => {
 		this.setState({ modalVisible: true });
 	};
 
+	/**
+	 * To hide modal
+	 */
 	onCloseModal = () => {
 		this.setState({ modalVisible: false });
 	};

@@ -10,7 +10,7 @@ it('promoList render', () => {
 	expect(render(<PromoList data={filler} />).toJSON()).toBeDefined();
 });
 
-describe('modalVisible should work', () => {
+describe('modalVisible should work', () => {//TODO MARCHE PAS
 
 	it('modalVisible should be false by default', () => {
 		expect(PromoList.modalVisible).not.toBeTruthy;
@@ -25,7 +25,7 @@ describe('modalVisible should work', () => {
 	
 	it('onCloseModal should set modalVisible to false', () => {
 		act(() => {
-			PromoList.onOpenModal;
+			PromoList.onCloseModal;
 		});
 		expect(PromoList.modalVisible).not.toBeTruthy;
 	});
@@ -38,7 +38,7 @@ describe('modalVisible should work', () => {
 		act(() => {
 			fireEvent.press(button);
 		});
-	
+
 		expect(PromoList.modalVisible).toBeTruthy;
 	});
 

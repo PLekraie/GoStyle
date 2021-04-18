@@ -35,11 +35,19 @@ export default function App() {
 		(async () => await putQrCode(data))();
 	};
 
+	/**
+	 * automatically called at launch. GET : request actived promotion list from api
+	 */
 	async function fetchMyAPI() {
 		let response = await axios.get('http://51.254.205.197:8082/rest/promotions/actifs');
 		setData(response);
 	}
 
+	/**
+	 * Called when a QrCode is scanned. 
+	 * PUT : request promotion activation, if succeed reload actived promotion list, else, handle error.
+	 * @param {string} qrCode 
+	 */
 	function putQrCode(qrCode) {
 		axios.put('http://51.254.205.197:8082/rest/promotions/activ/' + qrCode).then(
 			response => {
@@ -58,10 +66,10 @@ export default function App() {
 	}
 
 	if (hasPermission === null) {
-		return <Text>Requesting for camera permission</Text>;
+		return <Text>On a besoin de votre autorisation !</Text>;
 	}
 	if (hasPermission === false) {
-		return <Text>No access to camera</Text>;
+		return <Text>Nous n'avons pas accès à la caméra :(</Text>;
 	}
 
 	return (
