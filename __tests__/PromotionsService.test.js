@@ -6,9 +6,8 @@ import {expect} from '@jest/globals';
 
 describe('The service is working', function() {
 
-    beforeEach(() => {
-        service = new PromotionsService();
-        promo = service.getActivePromotions();
+    beforeEach(() => {        
+        promo = PromotionsService.getActivePromotions();
     });
     
 

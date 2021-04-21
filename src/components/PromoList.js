@@ -20,6 +20,10 @@ class PromoList extends React.Component {
 		this.setState({ modalVisible: false });
 	};
 
+	EmptyListMessage = () => {
+		return (<Text testID="emptyMessage">Vous n'avez aucune promotion pour le moment :(</Text>)
+	}
+
 	render() {
 		const data = this.props.data;
 		return (
@@ -40,11 +44,12 @@ class PromoList extends React.Component {
 								data={data.data}
 								renderItem={({ item }) => (
 									<Text style={styles.item}>
-										{item.description} {item.montant > 0 ? item.montant + '%' : ''}
-										{item.qrCode}
+										{item.description} {item.montant > 0 ? item.montant + '%' : ''}										
 									</Text>
 								)}
 								keyExtractor={item => item.qrcode}
+								ListEmptyComponent={this.EmptyListMessage}
+								testID="flatList"
 							/>
 							<TouchableHighlight style={{ ...styles.openButton, backgroundColor: '#2196F3' }} onPress={this.onCloseModal}>
 								<Text style={styles.textStyle}>retour au scanner</Text>

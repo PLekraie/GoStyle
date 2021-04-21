@@ -16,34 +16,33 @@ describe('modalVisible should work by itself', () => {
 		expect(promolist.state.modalVisible).toBe(false);
 	});
 
-	it('onOpenModal should set modalVisible to true', () => {//TODO
+	/*it('onOpenModal should set modalVisible to true', () => {//TODO
 		let promolist = new PromoList();
-		/*act(() => {
+		act(() => {
 			promolist.onOpenModal;
 		});
-		expect(promolist.state.modalVisible).toBe(true);*/
+		expect(promolist.state.modalVisible).toBe(true);
 	});
 
 	it('onCloseModal should set modalVisible to false', () => {//TODO
 		let promolist = new PromoList();
 		//console.log(promolist.updater.isMounted);
-		/*act(() => {
+		act(() => {
 			promolist.onCloseModal();
 		});
-		expect(promolist.state.modalVisible).not.toBeTruthy;*/
-	});
+		expect(promolist.state.modalVisible).not.toBeTruthy;
+	});*/
 });
 
 describe('the modal should work with the button', () => {
 	it('the modal is hidden by default', () => {
 		const filler = { data: [] };
 		const { getByTestId } = render(<PromoList data={filler} />);
-	
+
 		const modal = getByTestId('modalList');
-	
+
 		expect(modal.props.visible).toBeFalsy();
 	});
-
 
 	it('the button makes the modal appear', () => {
 		const filler = { data: [] };
@@ -60,4 +59,40 @@ describe('the modal should work with the button', () => {
 	});
 });
 
+describe('FlatList should display correctly', () => {
+	it('FlatList should receive array', () => {
+		const filler = { data: [] };
+		const { getByTestId } = render(<PromoList data={filler} />);
 
+		const flatList = getByTestId('flatList');
+
+		expect(flatList.props.data).toBeInstanceOf(Array);
+	});
+
+	it('FlatList should display message when empty', () => {
+		const filler = { data: [] };
+		const { getByTestId } = render(<PromoList data={filler} />);
+
+		const text = getByTestId('emptyMessage');
+
+		expect(text).toBeDefined();
+	});
+
+	it('FlatList receive list correctly', () => {
+		const filler = { data: [{ description: 'test', montant: 0, qrcode: 'test' }] };
+		const { getByTestId } = render(<PromoList data={filler} />);
+
+		const flatList = getByTestId('flatList');
+
+		expect(flatList.props.data).toMatchObject([{ description: 'test', montant: 0, qrcode: 'test' }]);
+	});
+
+	/*it('FlatList display list correctly', () => {//TODO check le Text ?
+		const filler = { data: [] };
+		const { getByTestId } = render(<PromoList data={filler} />);
+	
+		const modal = getByTestId('modalList');
+	
+		expect(modal.props.visible).toBeFalsy();
+	});*/
+});

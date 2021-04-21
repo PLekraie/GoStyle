@@ -5,6 +5,7 @@ import axios from 'axios';
 import Header from './src/components/Header';
 import { BarCodeScanner } from 'expo-barcode-scanner';
 import PromoList from './src/components/PromoList';
+import PromotionsService from './src/services/PromotionsService';
 
 
 
@@ -36,11 +37,21 @@ export default function App() {
 	};
 
 	/**
-	 * automatically called at launch. GET : request actived promotion list from api
+	 * automatically called at launch. GET : request actived promotion list from service
 	 */
-	async function fetchMyAPI() {
-		let response = await axios.get('http://51.254.205.197:8082/rest/promotions/actifs');
-		setData(response);
+	async function fetchMyAPI() {		
+		PromotionsService.getActivePromotions().then(
+			response => {
+				setData(response);
+			},
+			error => {
+				if (error.response.status === 404) {
+					alert(`L'application nécessite une mise à jour`);
+				} else {
+					alert(`Uho, il semblerait que notre serveur soit indisponible :(`);
+				}
+			}
+		)
 	}
 
 	/**
@@ -49,9 +60,8 @@ export default function App() {
 	 * @param {string} qrCode 
 	 */
 	function putQrCode(qrCode) {
-		axios.put('http://51.254.205.197:8082/rest/promotions/activ/' + qrCode).then(
-			response => {
-				console.log(response);
+		PromotionsService.putQrCode(qrCode).then(
+			() => {
 				alert(`Vous avez une nouvelle promotion ! :)`);
 				fetchMyAPI();
 			},
