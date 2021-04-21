@@ -10,36 +10,54 @@ it('promoList render', () => {
 	expect(render(<PromoList data={filler} />).toJSON()).toBeDefined();
 });
 
-describe('modalVisible should work', () => {//TODO MARCHE PAS
-
+describe('modalVisible should work by itself', () => {
 	it('modalVisible should be false by default', () => {
-		expect(PromoList.modalVisible).not.toBeTruthy;
+		let promolist = new PromoList();
+		expect(promolist.state.modalVisible).toBe(false);
 	});
-	
-	it('onOpenModal should set modalVisible to true', () => {
-		act(() => {
-			PromoList.onOpenModal;
+
+	it('onOpenModal should set modalVisible to true', () => {//TODO
+		let promolist = new PromoList();
+		/*act(() => {
+			promolist.onOpenModal;
 		});
-		expect(PromoList.modalVisible).toBeTruthy;
+		expect(promolist.state.modalVisible).toBe(true);*/
 	});
-	
-	it('onCloseModal should set modalVisible to false', () => {
-		act(() => {
-			PromoList.onCloseModal;
+
+	it('onCloseModal should set modalVisible to false', () => {//TODO
+		let promolist = new PromoList();
+		//console.log(promolist.updater.isMounted);
+		/*act(() => {
+			promolist.onCloseModal();
 		});
-		expect(PromoList.modalVisible).not.toBeTruthy;
+		expect(promolist.state.modalVisible).not.toBeTruthy;*/
 	});
-	
-	it('button change modalVisible values', () => {
+});
+
+describe('the modal should work with the button', () => {
+	it('the modal is hidden by default', () => {
 		const filler = { data: [] };
 		const { getByTestId } = render(<PromoList data={filler} />);
 	
+		const modal = getByTestId('modalList');
+	
+		expect(modal.props.visible).toBeFalsy();
+	});
+
+
+	it('the button makes the modal appear', () => {
+		const filler = { data: [] };
+		const { getByTestId } = render(<PromoList data={filler} />);
+
 		const button = getByTestId('openModalButton');
 		act(() => {
 			fireEvent.press(button);
 		});
 
-		expect(PromoList.modalVisible).toBeTruthy;
-	});
+		const modal = getByTestId('modalList');
 
+		expect(modal.props.visible).toBeTruthy();
+	});
 });
+
+

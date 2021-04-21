@@ -31,6 +31,7 @@ class PromoList extends React.Component {
 					onRequestClose={() => {
 						Alert.alert('Modal has been closed.');
 					}}
+					testID="modalList"
 				>
 					<View style={styles.centeredView}>
 						<View style={styles.modalView}>
