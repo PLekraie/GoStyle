@@ -6,13 +6,23 @@ class PromoList extends React.Component {
 		modalVisible: false
 	};
 
+	/**
+	 * To display modal
+	 */
 	onOpenModal = () => {
 		this.setState({ modalVisible: true });
 	};
 
+	/**
+	 * To hide modal
+	 */
 	onCloseModal = () => {
 		this.setState({ modalVisible: false });
 	};
+
+	EmptyListMessage = () => {
+		return (<Text testID="emptyMessage">Vous n'avez aucune promotion pour le moment :(</Text>)
+	}
 
 	render() {
 		const data = this.props.data;
@@ -25,6 +35,7 @@ class PromoList extends React.Component {
 					onRequestClose={() => {
 						Alert.alert('Modal has been closed.');
 					}}
+					testID="modalList"
 				>
 					<View style={styles.centeredView}>
 						<View style={styles.modalView}>
@@ -33,11 +44,12 @@ class PromoList extends React.Component {
 								data={data.data}
 								renderItem={({ item }) => (
 									<Text style={styles.item}>
-										{item.description} {item.montant > 0 ? item.montant + '%' : ''}
-										{item.qrCode}
+										{item.description} {item.montant > 0 ? item.montant + '%' : ''}										
 									</Text>
 								)}
 								keyExtractor={item => item.qrcode}
+								ListEmptyComponent={this.EmptyListMessage}
+								testID="flatList"
 							/>
 							<TouchableHighlight style={{ ...styles.openButton, backgroundColor: '#2196F3' }} onPress={this.onCloseModal}>
 								<Text style={styles.textStyle}>retour au scanner</Text>
@@ -46,7 +58,7 @@ class PromoList extends React.Component {
 					</View>
 				</Modal>
 
-				<TouchableHighlight style={styles.openButton} onPress={this.onOpenModal}>
+				<TouchableHighlight style={styles.openButton} onPress={this.onOpenModal} testID="openModalButton">
 					<Text style={styles.textStyle}>Voir mes promotions</Text>
 				</TouchableHighlight>
 			</View>
