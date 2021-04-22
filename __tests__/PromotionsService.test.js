@@ -4,7 +4,7 @@ import PromotionsService from '../src/services/PromotionsService';
 import {expect} from '@jest/globals';
 
 
-describe('The service is working', function() {
+describe('The GET method of the service is working', function() {
 
     beforeEach(() => {        
         promo = PromotionsService.getActivePromotions();
@@ -20,4 +20,12 @@ describe('The service is working', function() {
         expect(promo).not.toBeNull();
     });
 
+    test('the service return a promise', async () => {
+        expect(promo).toBeInstanceOf(Promise);        
+    });
+
+    test('the service response contains an Array', async () => {
+        let promise = await promo;
+        expect(promise.data).toBeInstanceOf(Array);        
+    });
 });
