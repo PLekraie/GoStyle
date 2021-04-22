@@ -5,10 +5,10 @@ This app let's you scan a QR Code to add it to your list of promotions.
 This app was made for a project during our Bachelor degree in EPSI Lille.
 
 This was made by :
-    Mara - Lenaraa
-    Lahcène - lham72
-    Pauline - PLekraie
-    Quentin - oda152skifaller
+- Mara (Lenaraa) ; 
+- Lahcène (lham72) ; 
+- Pauline (Lekraie) ; 
+- Quentin (oda152skifaller)
 
 ## Project setup
 ```
