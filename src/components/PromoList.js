@@ -51,7 +51,7 @@ class PromoList extends React.Component {
 								ListEmptyComponent={this.EmptyListMessage}
 								testID="flatList"
 							/>
-							<TouchableHighlight style={{ ...styles.openButton, backgroundColor: '#2196F3' }} onPress={this.onCloseModal}>
+							<TouchableHighlight style={{ ...styles.openButton, backgroundColor: '#2196F3' }} onPress={this.onCloseModal} testID="backToScanner">
 								<Text style={styles.textStyle}>retour au scanner</Text>
 							</TouchableHighlight>
 						</View>

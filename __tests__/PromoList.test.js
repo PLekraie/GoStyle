@@ -33,7 +33,28 @@ describe('the modal should work with the button', () => {
 
 		expect(modal.props.visible).toBeTruthy();
 	});
+
+	it('the button inside the modal makes the modal disappear', () => {
+		const filler = { data: [] };
+		const { getByTestId } = render(<PromoList data={filler} />);
+
+		const button = getByTestId('openModalButton');
+		act(() => {
+			fireEvent.press(button);
+		});
+
+		const modal = getByTestId('modalList');
+
+		const buttonInside = getByTestId('backToScanner');
+		act(() => {
+			fireEvent.press(buttonInside);
+		});
+
+		expect(modal.props.visible).toBeFalsy();
+	});
 });
+
+
 
 describe('FlatList should display correctly', () => {
 	it('FlatList should receive array', () => {
