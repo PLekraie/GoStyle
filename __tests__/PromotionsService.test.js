@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 import 'react-native';
 import PromotionsService from '../src/services/PromotionsService';
 import {expect} from '@jest/globals';
